@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Joseph/Documents/Programming/chip8/chip8.c
+cpu.h
+C:/Users/Joseph/Documents/Programming/chip8/cpu.h
+
+C:/Users/Joseph/Documents/Programming/chip8/cpu.c
+stdint.h
+-
+malloc.h
+-
+assert.h
+-
+mem.h
+-
+stdio.h
+-
+time.h
+-
+cpu.h
+C:/Users/Joseph/Documents/Programming/chip8/cpu.h
+
+C:/Users/Joseph/Documents/Programming/chip8/cpu.h
+
+C:/Users/Joseph/Documents/Programming/chip8/screen.c
+screen.h
+C:/Users/Joseph/Documents/Programming/chip8/screen.h
+
+C:/Users/Joseph/Documents/Programming/chip8/screen.h
+
