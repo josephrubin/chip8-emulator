@@ -64,23 +64,23 @@ void Cpu_cycle() {
 
     switch (first_nibble) {
         case 0x0:
-            if (second_nibble == 0x0) {
-                if (fourth_nibble == 0x0) {
-                    Scr_clear();
-                }
-                else if (fourth_nibble == 0xE) {
-                    // Return from subroutine.
-                    sp--;
-                    pc = stack[sp];
-                }
+            if (second_byte == 0xE0) {
+                /* 00E0: Clear the screen. */
+                Scr_clear();
+            }
+            else if (second_byte == 0xEE) {
+                /* 00EE: Return from subroutine. */
+                sp--;
+                pc = stack[sp];
             }
             else {
-                // TODO: unimplemented.
+                /* Purposely not implemented, as it is not needed. */
+                assert(0);
             }
             break;
 
         case 0x1:
-            // 1NNN: Goto address NNN.
+            /* 1NNN: Goto address NNN. */
             pc = opcode & 0x0FFF;
             break;
 
@@ -256,7 +256,7 @@ void Cpu_cycle() {
                     break;
 
                 case 0x1E:
-                    I = V[second_nibble];
+                    I += V[second_nibble];
                     break;
 
                 case 0x29:
@@ -272,7 +272,7 @@ void Cpu_cycle() {
                     break;
 
                 case 0x65:
-                    // todo:
+                    memcpy(V, memory + I, 16);
                     break;
             }
             pc += 2;
@@ -295,6 +295,8 @@ void Cpu_cycle() {
 
 // Test
 int main() {
+    Scr_init();
+    Inp_init();
     Cpu_init();
 
     assert(pc == 0x200);

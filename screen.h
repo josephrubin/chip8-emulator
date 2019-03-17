@@ -5,6 +5,8 @@
 #ifndef CHIP8_SCREEN_H
 #define CHIP8_SCREEN_H
 
+void Scr_init(void);
+
 void Scr_clear(void);
 
 #endif //CHIP8_SCREEN_H

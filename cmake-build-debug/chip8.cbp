@@ -95,6 +95,9 @@
 		<Unit filename="C:/Users/Joseph/Documents/Programming/chip8/screen.h">
 			<Option target="chip8"/>
 		</Unit>
+		<Unit filename="C:/Users/Joseph/Documents/Programming/chip8/testchip8.c">
+			<Option target="chip8"/>
+		</Unit>
 		<Unit filename="C:/Users/Joseph/Documents/Programming/chip8/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
