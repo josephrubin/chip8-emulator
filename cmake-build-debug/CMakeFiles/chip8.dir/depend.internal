@@ -7,6 +7,13 @@ CMakeFiles/chip8.dir/chip8.c.obj
 CMakeFiles/chip8.dir/cpu.c.obj
  C:/Users/Joseph/Documents/Programming/chip8/cpu.c
  C:/Users/Joseph/Documents/Programming/chip8/cpu.h
+ C:/Users/Joseph/Documents/Programming/chip8/input.h
+ C:/Users/Joseph/Documents/Programming/chip8/screen.h
+CMakeFiles/chip8.dir/input.c.obj
+ C:/Users/Joseph/Documents/Programming/chip8/input.c
+ C:/Users/Joseph/Documents/Programming/chip8/input.h
 CMakeFiles/chip8.dir/screen.c.obj
  C:/Users/Joseph/Documents/Programming/chip8/screen.c
  C:/Users/Joseph/Documents/Programming/chip8/screen.h
+CMakeFiles/chip8.dir/testchip8.c.obj
+ C:/Users/Joseph/Documents/Programming/chip8/testchip8.c

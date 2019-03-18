@@ -1,12 +1,1 @@
-//
-// Created by Joseph on 3/14/2019.
-//
-
-#ifndef CHIP8_SCREEN_H
-#define CHIP8_SCREEN_H
-
-void Scr_init(void);
-
-void Scr_clear(void);
-
-#endif //CHIP8_SCREEN_H
+#ifndef CHIP8_SCREEN_H#define CHIP8_SCREEN_Hvoid Scr_init(void);void Scr_paint(int x, int y, uint8_t value);void Scr_clear();#endif //CHIP8_SCREEN_H

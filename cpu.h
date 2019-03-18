@@ -5,7 +5,7 @@
 #ifndef CHIP8_CPU_H
 #define CHIP8_CPU_H
 
-void Cpu_init(void);
+void Cpu_init(uint8_t *mem);
 
 void Cpu_cycle(void);
 

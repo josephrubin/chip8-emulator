@@ -3,4 +3,4 @@ project(chip8 C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(chip8 cpu.c cpu.h chip8.c screen.c screen.h input.c input.h testchip8.c)
+add_executable(chip8 cpu.c cpu.h screen.c screen.h input.c input.h chip8.c)

@@ -9,12 +9,21 @@
 
 static const int PIXEL_COUNT = 64 * 32;
 
+/* todo: replace with bit vector. */
 static uint8_t *gfx;
 
 void Scr_init(void)
 {
-    gfx = calloc(PIXEL_COUNT, sizeof(uint8_t));
+    gfx = calloc(PIXEL_COUNT, sizeof *gfx);
     assert(gfx);
+}
+
+void Scr_paint(int x, int y, uint8_t value)
+{
+    assert(x < 64);
+    assert(y < 32);
+    assert(value == 0 || value == 1);
+    gfx[y * 64 + x] ^= value;
 }
 
 void Scr_clear()

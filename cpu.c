@@ -9,18 +9,14 @@
 #include "screen.h"
 #include "input.h"
 
-static const int K = 1024;
 static const uint16_t APPLICATION_START = 0x200;
 
-static uint16_t opcode;
 static uint8_t *memory;
+static uint16_t opcode;
 static uint8_t *V;
 static const int F = 15;
 static uint16_t I;
 static uint16_t pc;
-
-// Only really need one bit each, Replace with bit vector.
-// uint8_t gfx[64 * 32];
 
 static uint8_t delay_timer;
 static uint8_t sound_timer;
@@ -28,7 +24,8 @@ static uint8_t sound_timer;
 static uint16_t *stack;
 static uint16_t sp;
 
-void Cpu_init() {
+void Cpu_init(uint8_t *mem) {
+    memory = mem;
     sp = 0;
     pc = APPLICATION_START;
     opcode = 0;
@@ -37,23 +34,21 @@ void Cpu_init() {
     delay_timer = 0;
     sound_timer = 0;
 
-    // Reserve space for RAM and registers, and clear the memory.
-    memory = calloc(4 * K, sizeof *memory);
-    assert(memory);
+    /* Reserve space for RAM and registers, and clear the memory. */
     V = calloc(16, sizeof *V);
     assert(V);
     stack = calloc(8, sizeof *stack);
     assert(stack);
 
-    // Seed the RNG.
+    /* Seed the RNG. */
     srand(time(NULL));
 }
 
 void Cpu_cycle() {
-    // Fetch current instruction.
-    opcode = (uint16_t) (memory[pc] << 8U) | memory[pc + 1];
+    /* Fetch current two byte instruction. */
+    opcode = memory[pc] << 8U | memory[pc + 1];
 
-    // Decode instruction.
+    /* Decode instruction. */
     uint8_t first_byte = (opcode >> 8) & 0xFF;
     uint8_t second_byte = (opcode >> 0) & 0xFF;
 
@@ -67,14 +62,13 @@ void Cpu_cycle() {
             if (second_byte == 0xE0) {
                 /* 00E0: Clear the screen. */
                 Scr_clear();
-            }
-            else if (second_byte == 0xEE) {
+            } else if (second_byte == 0xEE) {
                 /* 00EE: Return from subroutine. */
                 sp--;
                 pc = stack[sp];
-            }
-            else {
+            } else {
                 /* Purposely not implemented, as it is not needed. */
+                printf("op: %x\n", opcode);
                 assert(0);
             }
             break;
@@ -218,6 +212,21 @@ void Cpu_cycle() {
             break;
 
         case 0xD:
+            /* DXYN: Draw sprite at (x,y)=(VX,VY), (width,height)=(8,N). */
+            // todo: VF
+            {
+                unsigned int i, j;
+                uint16_t bitstring_location;
+
+                V[F] = 0;
+                bitstring_location = I;
+                for (i = 0; i < fourth_nibble; i++) {
+                    for (j = 0; j < 8; j++) {
+                        Scr_paint(V[second_nibble], V[third_nibble], (memory[bitstring_location] >> (8 - j)) & 1);
+                    }
+                    bitstring_location++;
+                }
+            }
             break;
 
         case 0xE:
@@ -244,7 +253,7 @@ void Cpu_cycle() {
                     break;
 
                 case 0x0A:
-                    // todo:
+                    V[second_nibble] = Inp_blocking_next_key();
                     break;
 
                 case 0x15:
@@ -274,6 +283,9 @@ void Cpu_cycle() {
                 case 0x65:
                     memcpy(V, memory + I, 16);
                     break;
+
+                default:
+                    assert(0 /* Invalid opcode. */);
             }
             pc += 2;
             break;
@@ -293,7 +305,7 @@ void Cpu_cycle() {
     }
 }
 
-// Test
+/*
 int main() {
     Scr_init();
     Inp_init();
@@ -330,3 +342,4 @@ int main() {
 
     return 0;
 }
+ */

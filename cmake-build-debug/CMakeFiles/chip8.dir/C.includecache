@@ -25,12 +25,42 @@ time.h
 -
 cpu.h
 C:/Users/Joseph/Documents/Programming/chip8/cpu.h
+screen.h
+C:/Users/Joseph/Documents/Programming/chip8/screen.h
+input.h
+C:/Users/Joseph/Documents/Programming/chip8/input.h
 
 C:/Users/Joseph/Documents/Programming/chip8/cpu.h
 
+C:/Users/Joseph/Documents/Programming/chip8/input.c
+stdint.h
+-
+malloc.h
+-
+assert.h
+-
+conio.h
+-
+stdio.h
+-
+unistd.h
+-
+input.h
+C:/Users/Joseph/Documents/Programming/chip8/input.h
+
+C:/Users/Joseph/Documents/Programming/chip8/input.h
+
 C:/Users/Joseph/Documents/Programming/chip8/screen.c
+stdint.h
+-
+malloc.h
+-
+assert.h
+-
 screen.h
 C:/Users/Joseph/Documents/Programming/chip8/screen.h
 
 C:/Users/Joseph/Documents/Programming/chip8/screen.h
+
+C:/Users/Joseph/Documents/Programming/chip8/testchip8.c
 

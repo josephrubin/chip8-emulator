@@ -6,7 +6,14 @@ CMakeFiles/chip8.dir/chip8.c.obj: ../cpu.h
 
 CMakeFiles/chip8.dir/cpu.c.obj: ../cpu.c
 CMakeFiles/chip8.dir/cpu.c.obj: ../cpu.h
+CMakeFiles/chip8.dir/cpu.c.obj: ../input.h
+CMakeFiles/chip8.dir/cpu.c.obj: ../screen.h
+
+CMakeFiles/chip8.dir/input.c.obj: ../input.c
+CMakeFiles/chip8.dir/input.c.obj: ../input.h
 
 CMakeFiles/chip8.dir/screen.c.obj: ../screen.c
 CMakeFiles/chip8.dir/screen.c.obj: ../screen.h
+
+CMakeFiles/chip8.dir/testchip8.c.obj: ../testchip8.c
 
