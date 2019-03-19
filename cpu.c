@@ -8,11 +8,9 @@
 #include "cpu.h"
 #include "screen.h"
 #include "input.h"
-
-static const uint16_t APPLICATION_START = 0x200;
+#include "constant.h"
 
 static uint8_t *memory;
-static uint16_t opcode;
 static uint8_t *V;
 static const int F = 15;
 static uint16_t I;
@@ -28,7 +26,6 @@ void Cpu_init(uint8_t *mem) {
     memory = mem;
     sp = 0;
     pc = APPLICATION_START;
-    opcode = 0;
     I = 0;
 
     delay_timer = 0;
@@ -46,9 +43,8 @@ void Cpu_init(uint8_t *mem) {
 
 void Cpu_cycle() {
     /* Fetch current two byte instruction. */
-    opcode = memory[pc] << 8U | memory[pc + 1];
+    uint16_t opcode = memory[pc] << 8U | memory[pc + 1];
 
-    /* Decode instruction. */
     uint8_t first_byte = (opcode >> 8) & 0xFF;
     uint8_t second_byte = (opcode >> 0) & 0xFF;
 
@@ -57,6 +53,7 @@ void Cpu_cycle() {
     uint8_t third_nibble = (opcode >> 4) & 0xF;
     uint8_t fourth_nibble = (opcode >> 0) & 0xF;
 
+    /* Decode and execute instruction. */
     switch (first_nibble) {
         case 0x0:
             if (second_byte == 0xE0) {
@@ -68,7 +65,7 @@ void Cpu_cycle() {
                 pc = stack[sp];
             } else {
                 /* Purposely not implemented, as it is not needed. */
-                printf("op: %x\n", opcode);
+                fprintf(stderr, "Unknown opcode: %x\n", opcode);
                 assert(0);
             }
             break;
@@ -163,6 +160,7 @@ void Cpu_cycle() {
 
                 case 0x6:
                     // 8XY6: VX >>= VY.
+                    assert(second_nibble == third_nibble);
                     V[F] = V[second_nibble] & 1;
                     V[second_nibble] >>= 1;
                     break;
@@ -178,6 +176,7 @@ void Cpu_cycle() {
 
                 case 0xE:
                     // 8XYE: VX <<= VY.
+                    assert(second_nibble == third_nibble);
                     V[F] = V[second_byte] & ~(~0 >> 1);
                     V[second_nibble] <<= 1;
                     break;
@@ -303,6 +302,17 @@ void Cpu_cycle() {
     if (delay_timer > 0) {
         delay_timer--;
     }
+}
+
+void Cpu_print_memory(void)
+{
+    unsigned int i;
+
+    for (i = 0; i < 16; i++) {
+        printf("%02x ", V[i]);
+    }
+
+    printf("\n");
 }
 
 /*

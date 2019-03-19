@@ -13,4 +13,6 @@ char Inp_is_pressed(uint8_t key_index);
 
 uint8_t Inp_blocking_next_key();
 
+void Inp_print(void);
+
 #endif //CHIP8_INPUT_H

@@ -13,5 +13,3 @@ input.o: input.c input.h
 screen.o: screen.c screen.h
 	gcc -c screen.c -o screen.o
 
-clean:
-	rm chip8.exe chip8.o cpu.o input.o screen.o

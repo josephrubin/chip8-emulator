@@ -77,6 +77,9 @@
 		<Unit filename="C:/Users/Joseph/Documents/Programming/chip8/chip8.c">
 			<Option target="chip8"/>
 		</Unit>
+		<Unit filename="C:/Users/Joseph/Documents/Programming/chip8/constant.h">
+			<Option target="chip8"/>
+		</Unit>
 		<Unit filename="C:/Users/Joseph/Documents/Programming/chip8/cpu.c">
 			<Option target="chip8"/>
 		</Unit>
@@ -93,9 +96,6 @@
 			<Option target="chip8"/>
 		</Unit>
 		<Unit filename="C:/Users/Joseph/Documents/Programming/chip8/screen.h">
-			<Option target="chip8"/>
-		</Unit>
-		<Unit filename="C:/Users/Joseph/Documents/Programming/chip8/testchip8.c">
 			<Option target="chip8"/>
 		</Unit>
 		<Unit filename="C:/Users/Joseph/Documents/Programming/chip8/CMakeLists.txt">

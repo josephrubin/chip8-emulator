@@ -230,33 +230,6 @@ screen.c.s:
 	$(MAKE) -f CMakeFiles\chip8.dir\build.make CMakeFiles/chip8.dir/screen.c.s
 .PHONY : screen.c.s
 
-testchip8.obj: testchip8.c.obj
-
-.PHONY : testchip8.obj
-
-# target to build an object file
-testchip8.c.obj:
-	$(MAKE) -f CMakeFiles\chip8.dir\build.make CMakeFiles/chip8.dir/testchip8.c.obj
-.PHONY : testchip8.c.obj
-
-testchip8.i: testchip8.c.i
-
-.PHONY : testchip8.i
-
-# target to preprocess a source file
-testchip8.c.i:
-	$(MAKE) -f CMakeFiles\chip8.dir\build.make CMakeFiles/chip8.dir/testchip8.c.i
-.PHONY : testchip8.c.i
-
-testchip8.s: testchip8.c.s
-
-.PHONY : testchip8.s
-
-# target to generate assembly for a file
-testchip8.c.s:
-	$(MAKE) -f CMakeFiles\chip8.dir\build.make CMakeFiles/chip8.dir/testchip8.c.s
-.PHONY : testchip8.c.s
-
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -278,9 +251,6 @@ help:
 	@echo ... screen.obj
 	@echo ... screen.i
 	@echo ... screen.s
-	@echo ... testchip8.obj
-	@echo ... testchip8.i
-	@echo ... testchip8.s
 .PHONY : help
 
 

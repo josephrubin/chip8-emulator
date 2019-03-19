@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <malloc.h>
 #include <assert.h>
+
 #include "screen.h"
 
 static const int PIXEL_COUNT = 64 * 32;

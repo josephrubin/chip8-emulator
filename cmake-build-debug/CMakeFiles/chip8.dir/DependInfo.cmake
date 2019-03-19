@@ -8,7 +8,6 @@ set(CMAKE_DEPENDS_CHECK_C
   "C:/Users/Joseph/Documents/Programming/chip8/cpu.c" "C:/Users/Joseph/Documents/Programming/chip8/cmake-build-debug/CMakeFiles/chip8.dir/cpu.c.obj"
   "C:/Users/Joseph/Documents/Programming/chip8/input.c" "C:/Users/Joseph/Documents/Programming/chip8/cmake-build-debug/CMakeFiles/chip8.dir/input.c.obj"
   "C:/Users/Joseph/Documents/Programming/chip8/screen.c" "C:/Users/Joseph/Documents/Programming/chip8/cmake-build-debug/CMakeFiles/chip8.dir/screen.c.obj"
-  "C:/Users/Joseph/Documents/Programming/chip8/testchip8.c" "C:/Users/Joseph/Documents/Programming/chip8/cmake-build-debug/CMakeFiles/chip8.dir/testchip8.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
