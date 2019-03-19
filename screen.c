@@ -52,7 +52,7 @@ void Scr_print()
         if (i % 64 == 0) {
             printf("\n");
         }
-        printf("%s ", gfx[i] ? "#" : "0");
+        printf("%s ", gfx[i] ? "#" : " ");
     }
 
     printf("\n");

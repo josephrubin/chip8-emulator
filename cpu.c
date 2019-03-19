@@ -63,6 +63,7 @@ void Cpu_cycle() {
                 /* 00EE: Return from subroutine. */
                 sp--;
                 pc = stack[sp];
+                pc += 2;
             } else {
                 /* Purposely not implemented, as it is not needed. */
                 fprintf(stderr, "Unknown opcode: %04x\n", opcode);
@@ -291,7 +292,6 @@ void Cpu_cycle() {
                 case 0x29:
                     /* FX29: I = address of sprite specified by VX. */
                     assert(V[second_nibble] <= 0xF);
-                    printf("sprite: %x\n", V[second_nibble]);
                     I = DIGIT_SPRITE_LOCATION[V[second_nibble]];
                     pc += 2;
                     break;
