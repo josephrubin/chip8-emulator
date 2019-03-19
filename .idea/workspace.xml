@@ -12,31 +12,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="64a886e6-268c-4389-ad5e-57a53925bbdb" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/constant.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/a.exe" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/chip8.c" beforeDir="false" afterPath="$PROJECT_DIR$/chip8.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/chip8.exe" beforeDir="false" afterPath="$PROJECT_DIR$/chip8.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/chip8.o" beforeDir="false" afterPath="$PROJECT_DIR$/chip8.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/cmake_clean.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/objects1.rsp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/objects1.rsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/chip8.dir/progress.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/chip8.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/chip8.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/constant.h" beforeDir="false" afterPath="$PROJECT_DIR$/constant.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cpu.c" beforeDir="false" afterPath="$PROJECT_DIR$/cpu.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpu.h" beforeDir="false" afterPath="$PROJECT_DIR$/cpu.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cpu.o" beforeDir="false" afterPath="$PROJECT_DIR$/cpu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input.c" beforeDir="false" afterPath="$PROJECT_DIR$/input.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input.h" beforeDir="false" afterPath="$PROJECT_DIR$/input.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input.o" beforeDir="false" afterPath="$PROJECT_DIR$/input.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/screen.c" beforeDir="false" afterPath="$PROJECT_DIR$/screen.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screen.h" beforeDir="false" afterPath="$PROJECT_DIR$/screen.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/screen.o" beforeDir="false" afterPath="$PROJECT_DIR$/screen.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.ch8.bak" beforeDir="false" afterPath="$PROJECT_DIR$/test.ch8.bak" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -49,11 +35,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="chip8.c" pinned="false" current-in-tab="true">
+      <file leaf-file-name="chip8.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/chip8.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="16" column="105" selection-start-line="16" selection-start-column="105" selection-end-line="16" selection-end-column="105" />
+            <state relative-caret-position="323">
+              <caret line="58" column="24" lean-forward="true" selection-start-line="58" selection-start-column="24" selection-end-line="58" selection-end-column="24" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -64,8 +50,8 @@
       <file leaf-file-name="cpu.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cpu.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="196">
-              <caret line="53" column="48" selection-start-line="53" selection-start-column="48" selection-end-line="53" selection-end-column="48" />
+            <state relative-caret-position="1">
+              <caret line="226" column="29" selection-start-line="226" selection-start-column="29" selection-end-line="226" selection-end-column="29" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -77,31 +63,28 @@
         <entry file="file://$PROJECT_DIR$/cpu.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="187">
-              <caret line="11" column="26" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
+              <caret line="11" column="28" lean-forward="true" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="input.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/input.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="714">
-              <caret line="42" column="1" lean-forward="true" selection-start-line="42" selection-start-column="1" selection-end-line="42" selection-end-column="1" />
-              <folding>
-                <element signature="e#42#61#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="screen.c" pinned="false" current-in-tab="false">
+      <file leaf-file-name="screen.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/screen.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="376">
-              <caret line="37" selection-start-line="37" selection-end-line="37" />
+            <state relative-caret-position="328">
+              <caret line="47" column="33" selection-start-line="47" selection-start-column="33" selection-end-line="47" selection-end-column="33" />
               <folding>
                 <element signature="e#42#61#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="screen.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/screen.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="22" lean-forward="true" selection-start-column="22" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -109,8 +92,8 @@
       <file leaf-file-name="constant.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/constant.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="40" selection-start-line="9" selection-start-column="40" selection-end-line="9" selection-end-column="40" />
+            <state relative-caret-position="255">
+              <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -120,6 +103,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>102</find>
+      <find>rand</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -131,14 +115,14 @@
         <option value="$PROJECT_DIR$/main.c" />
         <option value="$PROJECT_DIR$/cartridge.c" />
         <option value="$PROJECT_DIR$/testchip8.c" />
-        <option value="$PROJECT_DIR$/screen.h" />
-        <option value="$PROJECT_DIR$/screen.c" />
         <option value="$PROJECT_DIR$/input.h" />
-        <option value="$PROJECT_DIR$/constant.h" />
         <option value="$PROJECT_DIR$/input.c" />
         <option value="$PROJECT_DIR$/cpu.h" />
-        <option value="$PROJECT_DIR$/cpu.c" />
+        <option value="$PROJECT_DIR$/screen.h" />
+        <option value="$PROJECT_DIR$/constant.h" />
         <option value="$PROJECT_DIR$/chip8.c" />
+        <option value="$PROJECT_DIR$/cpu.c" />
+        <option value="$PROJECT_DIR$/screen.c" />
       </list>
     </option>
   </component>
@@ -153,8 +137,8 @@
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="228" />
-    <option name="y" value="-16" />
+    <option name="x" value="-285" />
+    <option name="y" value="-15" />
     <option name="width" value="1400" />
     <option name="height" value="820" />
   </component>
@@ -317,12 +301,12 @@
       <updated>1551821281654</updated>
       <workItem from="1551821284381" duration="6680000" />
       <workItem from="1552586807728" duration="13163000" />
-      <workItem from="1552878189381" duration="12237000" />
+      <workItem from="1552878189381" duration="22482000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="32080000" />
+    <option name="totallyTimeSpent" value="42325000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
@@ -336,7 +320,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.21774194" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.26612905" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -467,13 +451,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/screen.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/input.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -495,56 +472,63 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/screen.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="376">
-          <caret line="37" selection-start-line="37" selection-end-line="37" />
-          <folding>
-            <element signature="e#42#61#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/input.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="714">
-          <caret line="42" column="1" lean-forward="true" selection-start-line="42" selection-start-column="1" selection-end-line="42" selection-end-column="1" />
+        <state relative-caret-position="119">
+          <caret line="22" column="16" selection-start-line="22" selection-start-column="16" selection-end-line="22" selection-end-column="16" />
           <folding>
             <element signature="e#42#61#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/constant.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="40" selection-start-line="9" selection-start-column="40" selection-end-line="9" selection-end-column="40" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cpu.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
-          <caret line="11" column="26" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
+          <caret line="11" column="28" lean-forward="true" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cpu.c">
+    <entry file="file://$PROJECT_DIR$/constant.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="53" column="48" selection-start-line="53" selection-start-column="48" selection-end-line="53" selection-end-column="48" />
+        <state relative-caret-position="255">
+          <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chip8.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="58" column="24" lean-forward="true" selection-start-line="58" selection-start-column="24" selection-end-line="58" selection-end-column="24" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/chip8.c">
+    <entry file="file://$PROJECT_DIR$/cpu.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="16" column="105" selection-start-line="16" selection-start-column="105" selection-end-line="16" selection-end-column="105" />
+        <state relative-caret-position="1">
+          <caret line="226" column="29" selection-start-line="226" selection-start-column="29" selection-end-line="226" selection-end-column="29" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/screen.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="22" lean-forward="true" selection-start-column="22" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/screen.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="328">
+          <caret line="47" column="33" selection-start-line="47" selection-start-column="33" selection-end-line="47" selection-end-column="33" />
+          <folding>
+            <element signature="e#42#61#0" expanded="true" />
           </folding>
         </state>
       </provider>

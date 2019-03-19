@@ -27,7 +27,10 @@ int main(int argc, char *argv[])
 void Ch8_power_on(char *rom_file_name)
 {
     unsigned int i;
-    FILE *rom;
+    FILE *interpreter_data, *rom;
+
+    interpreter_data = fopen(interpreter_data_file_name, "rb");
+    assert(interpreter_data);
 
     rom = fopen(rom_file_name, "rb");
     assert(rom);
@@ -36,8 +39,13 @@ void Ch8_power_on(char *rom_file_name)
     memory = calloc(MEMORY_SIZE, sizeof *memory);
     assert(memory);
 
-    /* Load in the desired ROM. */
+    /* Load in the interpreter data which is constant regardless of the ROM. */
+    fread(memory, sizeof *memory, APPLICATION_START, interpreter_data);
+    fclose(interpreter_data);
+
+    /* Load in the ROM. */
     fread(memory + APPLICATION_START, sizeof *memory, MEMORY_SIZE - APPLICATION_START, rom);
+    fclose(rom);
 
     /* Initialize all hardware modules and enable the cpu last. */
     Scr_init();
@@ -51,6 +59,7 @@ void Ch8_power_on(char *rom_file_name)
             Cpu_cycle();
         }
         Cpu_print_memory();
+        Scr_print();
         sleep(1);
     }
 }

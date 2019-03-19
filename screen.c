@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <malloc.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "screen.h"
 
@@ -34,4 +35,18 @@ void Scr_clear()
     for (i = 0; i < PIXEL_COUNT; i++) {
         gfx[i] = 0;
     }
+}
+
+void Scr_print()
+{
+    unsigned int i;
+
+    for (i = 0; i < PIXEL_COUNT; i++) {
+        if (i % 64 == 0) {
+            printf("\n");
+        }
+        printf("%s ", gfx[i] ? "#" : "0");
+    }
+
+    printf("\n");
 }
