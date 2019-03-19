@@ -1,4 +1,0 @@
-ToolSet: 3.21@C:\MinGW
-Options: 
-
-Options:
