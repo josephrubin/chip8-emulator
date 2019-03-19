@@ -215,8 +215,7 @@ void Cpu_cycle() {
             break;
 
         case 0xD: {
-            /* DXYN: Draw sprite at (x,y)=(VX,VY), (width,height)=(8,N). */
-            // todo: VF
+            /* DXYN: Draw sprite at (x,y)=(VX,VY), (width,height)=(8,N). V[F] is set if collision, otherwise cleared. */
             unsigned int i, j;
             uint16_t bitstring_location;
             uint8_t sprite_row;
@@ -226,7 +225,9 @@ void Cpu_cycle() {
             for (i = 0; i < fourth_nibble; i++) {
                 sprite_row = memory[bitstring_location];
                 for (j = 0; j < 8; j++) {
-                    Scr_paint(V[second_nibble] + j, V[third_nibble] + i, (sprite_row >> 7) & 1);
+                    if(Scr_paint(V[second_nibble] + j, V[third_nibble] + i, (sprite_row >> 7) & 1)) {
+                        V[F] = 1;
+                    }
                     sprite_row <<= 1;
                 }
                 bitstring_location++;
@@ -322,11 +323,13 @@ void Cpu_cycle() {
                     break;
 
                 default:
+                    fprintf(stderr, "Unknown opcode: %04x\n", opcode);
                     assert(0 /* Invalid opcode. */);
             }
             break;
 
         default:
+            fprintf(stderr, "Unknown opcode: %04x\n", opcode);
             assert(0 /* Invalid opcode. */);
     }
 
