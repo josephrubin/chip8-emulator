@@ -54,7 +54,7 @@ void Ch8_power_on(char *rom_file_name)
 
     /* Driving the system consists of collecting user input and continuously cycling the cpu. */
     for (;;) {
-        for (i = 0; i < 50; i++) {
+        for (i = 0; i < 100; i++) {
             Inp_cycle();
             Cpu_cycle();
         }

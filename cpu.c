@@ -178,7 +178,7 @@ void Cpu_cycle() {
                 case 0xE:
                     /* 8XYE: VX <<= VY. */
                     assert(second_nibble == third_nibble);
-                    V[F] = V[second_byte] & ~(~0 >> 1);
+                    V[F] = V[second_nibble] & ~(~0 >> 1);
                     V[second_nibble] <<= 1;
                     pc += 2;
                     break;
@@ -240,14 +240,14 @@ void Cpu_cycle() {
         case 0xE:
             if (second_byte == 0x9E) {
                 /* EX9E: skip if VX key is pressed. */
-                if (Inp_is_pressed(V[second_byte])) {
+                if (Inp_is_pressed(V[second_nibble])) {
                     pc += 2;
                 }
                 pc += 2;
             }
             else if (third_nibble == 0xA) {
                 /* EXA1: skip if VX key isn't pressed. */
-                if (!Inp_is_pressed(V[second_byte])) {
+                if (!Inp_is_pressed(V[second_nibble])) {
                     pc += 2;
                 }
                 pc += 2;

@@ -49,11 +49,10 @@ void Scr_print()
     unsigned int i;
 
     for (i = 0; i < PIXEL_COUNT; i++) {
+        printf("%s ", gfx[i] ? "#" : " ");
         if (i % 64 == 0) {
             printf("\n");
         }
-        printf("%s ", gfx[i] ? "#" : " ");
     }
-
     printf("\n");
 }
