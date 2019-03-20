@@ -10,209 +10,260 @@
 #include "input.h"
 #include "constant.h"
 
+/* Pointer to the system memory. */
 static uint8_t *memory;
-static uint8_t *V;
-static const int F = 15;
-static uint16_t I;
-static uint16_t pc;
 
+/* Counts down at 60hz if above 0. */
 static uint8_t delay_timer;
+
+/* Counts down at 60hz and emits a tone if above 0. */
 static uint8_t sound_timer;
 
-static uint16_t *stack;
-static uint16_t sp;
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* CPU Managed Registers -------------------------------------------------------------------------------------------- */
 
-void Cpu_init(uint8_t *mem) {
-    memory = mem;
-    sp = 0;
-    pc = APPLICATION_START;
-    I = 0;
+/* Points to the memory address currently being executed. */
+static uint16_t program_counter;
+
+/* Stores return addresses for subroutine calls. */
+static uint16_t *stack;
+
+/* Points to the top of the stack, the next place that a return address will be placed. */
+static uint16_t stack_pointer;
+
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* Application Managed Registers ------------------------------------------------------------------------------------ */
+
+/* The CPU's 16 main registers, V0-VF. */
+static uint8_t *register_v;
+
+/* The last register, VF, is used as a carry/overflow indicator. */
+static const int F = 15;
+
+/* An additional register I is often used by the application to hold a memory address. */
+static uint16_t I;
+
+enum INIT_STATUS Cpu_init(uint8_t *allocated_memory) {
+    memory = allocated_memory;
 
     delay_timer = 0;
     sound_timer = 0;
 
-    /* Reserve space for RAM and registers, and clear the memory. */
-    V = calloc(16, sizeof *V);
-    assert(V);
-    stack = calloc(8, sizeof *stack);
-    assert(stack);
+    /* Recall that the ROM is loaded in at APPLICATION_START, not at address 0 (which is used by the interpreter). */
+    program_counter = APPLICATION_START;
+
+    /* Allocate the registers clear them. */
+    I = 0;
+    register_v = calloc(16, sizeof *register_v);
+    if (!register_v) {
+        return INIT_STATUS_FAILURE;
+    }
+
+    /* Allocate the stack and point to the top of it. */
+    stack_pointer = 0;
+    stack = malloc(8 * sizeof *stack);
+    if (!stack) {
+        free(register_v);
+        return INIT_STATUS_FAILURE;
+    }
 
     /* Seed the RNG. */
-    srand(time(NULL));
+    srand((unsigned int) time(NULL));
+
+    return INIT_STATUS_SUCCESS;
 }
 
-void Cpu_cycle() {
+void Cpu_cycle(void) {
+    /* Set when an opcode cannot be successfully decoded. */
+    uint8_t unknown_opcode;
+
     /* Fetch current two byte instruction. */
-    uint16_t opcode = memory[pc] << 8U | memory[pc + 1];
+    uint16_t opcode = memory[program_counter] << 8U | memory[program_counter + 1];
+    uint8_t second_byte = memory[program_counter + 1];
 
-    uint8_t second_byte = (opcode >> 0) & 0xFF;
-
-    uint8_t first_nibble = (opcode >> 12) & 0xF;
-    uint8_t second_nibble = (opcode >> 8) & 0xF;
-    uint8_t third_nibble = (opcode >> 4) & 0xF;
-    uint8_t fourth_nibble = (opcode >> 0) & 0xF;
+    uint8_t first_nibble = (opcode >> 12) & 0x0F;
+    uint8_t second_nibble = (opcode >> 8) & 0x0F;
+    uint8_t third_nibble = (opcode >> 4) & 0x0F;
+    uint8_t fourth_nibble = (opcode >> 0) & 0x0F;
 
     /* Decode and execute instruction. */
+    unknown_opcode = 0;
     switch (first_nibble) {
         case 0x0:
-            if (second_byte == 0xE0) {
+            if ((opcode & 0xFFFu) == 0x0E0) {
                 /* 00E0: Clear the screen. */
                 Scr_clear();
-                pc += 2;
-            } else if (second_byte == 0xEE) {
+                program_counter += 2;
+            }
+            else if ((opcode & 0xFFFu) == 0x0EE) {
                 /* 00EE: Return from subroutine. */
-                sp--;
-                pc = stack[sp];
-                pc += 2;
-            } else {
-                /* Purposely not implemented, as it is not needed. */
-                fprintf(stderr, "Unknown opcode: %04x\n", opcode);
-                assert(0);
+                stack_pointer--;
+                program_counter = stack[stack_pointer];
+                program_counter += 2;
+            }
+            else {
+                unknown_opcode = 1;
             }
             break;
 
         case 0x1:
             /* 1NNN: Goto address NNN. */
-            pc = opcode & 0x0FFF;
+            program_counter = opcode & 0x0FFF;
             break;
 
         case 0x2:
             /* 2NNN: Call address NNN. */
-            stack[sp] = pc;
-            sp++;
-            pc = opcode & 0x0FFF;
+            stack[stack_pointer] = program_counter;
+            stack_pointer++;
+            program_counter = opcode & 0x0FFF;
             break;
 
         case 0x3:
             /* 3XNN: Skip next instruction if VX == NN. */
-            if (V[second_nibble] == second_byte) {
-                pc += 2;
+            if (register_v[second_nibble] == second_byte) {
+                program_counter += 2;
             }
-            pc += 2;
+            program_counter += 2;
             break;
 
         case 0x4:
             /* 4XNN: Skip next instruction if VX != NN. */
-            if (V[second_nibble] != second_byte) {
-                pc += 2;
+            if (register_v[second_nibble] != second_byte) {
+                program_counter += 2;
             }
-            pc += 2;
+            program_counter += 2;
             break;
 
         case 0x5:
             /* 5XY0: Skip next instruction if VX != VY. */
-            assert(fourth_nibble == 0);
-            if (V[second_nibble] != V[third_nibble]) {
-                pc += 2;
+            if (fourth_nibble == 0) {
+                if (register_v[second_nibble] != register_v[third_nibble]) {
+                    program_counter += 2;
+                }
+                program_counter += 2;
             }
-            pc += 2;
+            else {
+                unknown_opcode = 1;
+            }
             break;
 
         case 0x6:
             /* 6XNN: VX = NN. */
-            V[second_nibble] = second_byte;
-            pc += 2;
+            register_v[second_nibble] = second_byte;
+            program_counter += 2;
             break;
 
         case 0x7:
             /* 7XNN: VX += NN. */
-            V[second_nibble] += second_byte;
-            pc += 2;
+            register_v[second_nibble] += second_byte;
+            program_counter += 2;
             break;
 
         case 0x8:
             switch (fourth_nibble) {
                 case 0x0:
                     /* 8XY0: VX = VY. */
-                    V[second_nibble] = V[third_nibble];
-                    pc += 2;
+                    register_v[second_nibble] = register_v[third_nibble];
+                    program_counter += 2;
                     break;
 
                 case 0x1:
                     /* 8XY1: VX |= VY. */
-                    V[second_nibble] |= V[third_nibble];
-                    pc += 2;
+                    register_v[second_nibble] |= register_v[third_nibble];
+                    program_counter += 2;
                     break;
 
                 case 0x2:
                     /* 8XY2: VX &= VY. */
-                    V[second_nibble] &= V[third_nibble];
-                    pc += 2;
+                    register_v[second_nibble] &= register_v[third_nibble];
+                    program_counter += 2;
                     break;
 
                 case 0x3:
                     /* 8XY3: VX ^= VY. */
-                    V[second_nibble] ^= V[third_nibble];
-                    pc += 2;
+                    register_v[second_nibble] ^= register_v[third_nibble];
+                    program_counter += 2;
                     break;
 
                 case 0x4:
                     /* 8XY4: VX += VY. */
-                    V[second_nibble] += V[third_nibble];
-                    V[F] = (V[second_nibble] < V[third_nibble]);
-                    pc += 2;
+                    register_v[second_nibble] += register_v[third_nibble];
+                    register_v[F] = (register_v[second_nibble] < register_v[third_nibble]);
+                    program_counter += 2;
                     break;
 
                 case 0x5:
                     /* 8XY5: VX -= VY. */
-                    V[F] = V[second_nibble] > V[third_nibble];
-                    V[second_nibble] -= V[third_nibble];
-                    pc += 2;
+                    register_v[F] = register_v[second_nibble] > register_v[third_nibble];
+                    register_v[second_nibble] -= register_v[third_nibble];
+                    program_counter += 2;
                     break;
 
                 case 0x6:
-                    /* 8XY6: VX >>= VY. */
+                    /* 8XY6: VX >>= 1. */
+                    /* Specs on this operation differ -- this assertion ensures that application writers do not assume
+                       functionality unsupported by this emulator. This assertion has never failed in my testing
+                       of CHIP-8 ROMS available online. */
                     assert(second_nibble == third_nibble);
-                    V[F] = V[second_nibble] & 1;
-                    V[second_nibble] >>= 1;
-                    pc += 2;
+                    register_v[F] = register_v[second_nibble] & 1;
+                    register_v[second_nibble] >>= 1;
+                    program_counter += 2;
                     break;
 
                 case 0x7:
                     /* 8XY7: VX = VY - VX. */
-                    V[F] = V[third_nibble] > V[second_nibble];
-                    V[second_nibble] = V[third_nibble] - V[second_nibble];
-                    pc += 2;
+                    register_v[F] = register_v[third_nibble] > register_v[second_nibble];
+                    register_v[second_nibble] = register_v[third_nibble] - register_v[second_nibble];
+                    program_counter += 2;
                     break;
 
                 case 0xE:
-                    /* 8XYE: VX <<= VY. */
+                    /* 8XYE: VX <<= 1. */
+                    /* Specs on this operation differ -- this assertion ensures that application writers do not assume
+                       functionality unsupported by this emulator. This assertion has never failed in my testing
+                       of CHIP-8 ROMS available online. */
                     assert(second_nibble == third_nibble);
-                    V[F] = V[second_nibble] & ~(~0 >> 1);
-                    V[second_nibble] <<= 1;
-                    pc += 2;
+                    register_v[F] = register_v[second_nibble] & ~(~0 >> 1);
+                    register_v[second_nibble] <<= 1;
+                    program_counter += 2;
                     break;
 
                 default:
-                    assert(0);
+                    unknown_opcode = 1;
+                    break;
             }
             break;
 
         case 0x9:
-            /* 9XY0: Skip next instruction if VX != VY. */
-            assert(fourth_nibble == 0);
-            if (V[second_nibble] != V[third_nibble]) {
-                pc += 2;
+            if (fourth_nibble == 0) {
+                /* 9XY0: Skip next instruction if VX != VY. */
+                assert(fourth_nibble == 0);
+                if (register_v[second_nibble] != register_v[third_nibble]) {
+                    program_counter += 2;
+                }
+                program_counter += 2;
             }
-            pc += 2;
+            else {
+                unknown_opcode = 1;
+            }
             break;
 
         case 0xA:
             /* ANNN: I = NNN. */
             I = opcode & 0x0FFF;
-            pc += 2;
+            program_counter += 2;
             break;
 
         case 0xB:
             /* BNNN: goto V0 + NNN. */
-            pc = V[0] + (opcode & 0x0FFF);
+            program_counter = register_v[0] + (opcode & 0x0FFF);
             break;
 
         case 0xC:
             /* CXNN: VX = random byte & NN. */
             /* TODO: Uniform randomness. */
-            V[second_nibble] = (rand() % 256) & second_byte;
-            pc += 2;
+            register_v[second_nibble] = (rand() % 256) & second_byte;
+            program_counter += 2;
             break;
 
         case 0xD: {
@@ -221,39 +272,39 @@ void Cpu_cycle() {
             uint16_t bitstring_location;
             uint8_t sprite_row;
 
-            V[F] = 0;
+            register_v[F] = 0;
             bitstring_location = I;
             for (i = 0; i < fourth_nibble; i++) {
                 sprite_row = memory[bitstring_location];
                 for (j = 0; j < 8; j++) {
-                    if(Scr_paint(V[second_nibble] + j, V[third_nibble] + i, (sprite_row >> 7) & 1)) {
-                        V[F] = 1;
+                    if(Scr_paint(register_v[second_nibble] + j, register_v[third_nibble] + i, (sprite_row >> 7) & 1)) {
+                        register_v[F] = 1;
                     }
                     sprite_row <<= 1;
                 }
                 bitstring_location++;
             }
-            pc += 2;
+            program_counter += 2;
             break;
         }
 
         case 0xE:
             if (second_byte == 0x9E) {
                 /* EX9E: skip if VX key is pressed. */
-                if (Inp_is_pressed(V[second_nibble])) {
-                    pc += 2;
+                if (Inp_is_pressed(register_v[second_nibble])) {
+                    program_counter += 2;
                 }
-                pc += 2;
+                program_counter += 2;
             }
             else if (third_nibble == 0xA) {
                 /* EXA1: skip if VX key isn't pressed. */
-                if (!Inp_is_pressed(V[second_nibble])) {
-                    pc += 2;
+                if (!Inp_is_pressed(register_v[second_nibble])) {
+                    program_counter += 2;
                 }
-                pc += 2;
+                program_counter += 2;
             }
             else {
-                assert(0);
+                unknown_opcode = 1;
             }
             break;
 
@@ -261,81 +312,86 @@ void Cpu_cycle() {
             switch (second_byte) {
                 case 0x07:
                     /* FX07: VX = delay timer. */
-                    V[second_nibble] = delay_timer;
-                    pc += 2;
+                    register_v[second_nibble] = delay_timer;
+                    program_counter += 2;
                     break;
 
                 case 0x0A:
                     /* FX0A: VX = next key pressed (block until next input). */
-                    V[second_nibble] = Inp_blocking_next_key();
-                    pc += 2;
+                    register_v[second_nibble] = Inp_blocking_next();
+                    program_counter += 2;
                     break;
 
                 case 0x15:
                     /* FX15: delay timer = VX. */
-                    delay_timer = V[second_nibble];
-                    pc += 2;
+                    delay_timer = register_v[second_nibble];
+                    program_counter += 2;
                     break;
 
                 case 0x18:
                     /* FX18: sound timer = VX. */
-                    sound_timer = V[second_nibble];
-                    pc += 2;
+                    sound_timer = register_v[second_nibble];
+                    program_counter += 2;
                     break;
 
                 case 0x1E:
                     /* FX1E: I += VX. */
-                    I += V[second_nibble];
-                    pc += 2;
+                    I += register_v[second_nibble];
+                    program_counter += 2;
                     break;
 
                 case 0x29:
                     /* FX29: I = address of sprite specified by VX. */
-                    assert(V[second_nibble] <= 0xF);
-                    I = DIGIT_SPRITE_LOCATION[V[second_nibble]];
-                    pc += 2;
+                    assert(register_v[second_nibble] <= 0xF);
+                    I = DIGIT_SPRITE_LOCATION[register_v[second_nibble]];
+                    program_counter += 2;
                     break;
 
                 case 0x33: {
                     /* FX33: store the decimal representation of value at VX (hundreds, tens, units) in I, I+1, I+2. */
-                    uint8_t decimal_value = V[second_nibble];
+                    uint8_t decimal_value = register_v[second_nibble];
                     memory[I] = decimal_value / 100;
                     decimal_value %= 100;
                     memory[I + 1] = decimal_value / 10;
                     decimal_value %= 10;
                     memory[I + 2] = decimal_value;
-                    pc += 2;
+                    program_counter += 2;
                     break;
                 }
 
                 case 0x55:
                     /* FX55: store V0 through VX in memory starting at I. */
                     assert(second_nibble <= 0xF);
-                    memcpy(memory + I, V, second_nibble + 1);
-                    pc += 2;
+                    memcpy(memory + I, register_v, second_nibble + 1);
+                    program_counter += 2;
                     break;
 
                 case 0x65:
                     /* FX65: load V0 through VX from memory starting at I. */
                     assert(second_nibble <= 0xF);
-                    memcpy(V, memory + I, second_nibble + 1);
-                    pc += 2;
+                    memcpy(register_v, memory + I, second_nibble + 1);
+                    program_counter += 2;
                     break;
 
                 default:
-                    fprintf(stderr, "Unknown opcode: %04x\n", opcode);
-                    assert(0 /* Invalid opcode. */);
+                    unknown_opcode = 1;
             }
             break;
 
         default:
-            fprintf(stderr, "Unknown opcode: %04x\n", opcode);
-            assert(0 /* Invalid opcode. */);
+            unknown_opcode = 1;
+    }
+
+    if (unknown_opcode) {
+        /* If there was an issue decoding the opcode, there was no execution. */
+        fprintf(stderr, "Unknown opcode: %04x\n", opcode);
+        // todo: free all memory, exit gracefully.
+        exit(EXIT_FAILURE);
     }
 
     if (sound_timer > 0) {
         sound_timer--;
-        // TODO: make sound. Call sound device stub.
+        // TODO: make sound..
     }
     if (delay_timer > 0) {
         delay_timer--;
@@ -344,52 +400,11 @@ void Cpu_cycle() {
 
 void Cpu_print_memory(void)
 {
-    unsigned int i;
+    uint8_t i;
 
     for (i = 0; i < 16; i++) {
-        printf("%02x ", V[i]);
+        printf("%02x ", register_v[i]);
     }
 
-    printf("I=%04x ", I);
-
-    printf("\n");
+    printf("I=%04x \n", I);
 }
-
-/*
-int main() {
-    Scr_init();
-    Inp_init();
-    Cpu_init();
-
-    assert(pc == 0x200);
-    assert(sp == 0x0);
-    assert(opcode == 0x0);
-    assert(I == 0x0);
-    assert(V[0] == 0);
-
-    // Load in some sample memory.
-    uint8_t sample[] = {0x70, 0x01,
-                        0x73, 0x35,
-                        0xA1, 0x11,
-                        0xC2, 0xFF};
-    memcpy(memory + 0x200, sample, sizeof sample);
-
-    Cpu_cycle();
-    assert(V[0] == 0x1);
-    assert(pc == 0x202);
-
-    Cpu_cycle();
-    assert(V[3] == 0x35);
-
-    Cpu_cycle();
-    assert(I == 0x0111);
-
-    // TODO: Check randomness.
-    Cpu_cycle();
-    // printf("%d", V[2]);
-
-    printf("%s", "All tests passed.");
-
-    return 0;
-}
- */

@@ -1,7 +1,3 @@
-//
-// Created by Joseph on 3/14/2019.
-//
-
 #include <stdint.h>
 #include <malloc.h>
 #include <assert.h>
@@ -12,24 +8,27 @@
 
 #include "input.h"
 
-/* The system uses a hexadecimal keypad. */
+/* The system uses a hexadecimal keypad with these labels. */
 static const int INPUT_PAD[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
+/* The number of input keys to the system. */
 static const int KEY_COUNT = 16;
-static uint8_t *key;
 
-void Inp_init()
+enum INIT_STATUS Inp_init(void)
 {
-    key = calloc(16, sizeof *key);
-    assert(key);
+    return INIT_STATUS_SUCCESS;
 }
 
-char Inp_is_pressed(uint8_t key_index)
+uint8_t Inp_is_pressed(uint8_t key_number)
 {
-    assert(key_index < 16);
-    return key[key_index];
+    assert(key_number < KEY_COUNT);
+
+    /* Using windows API for keyboard state. */
+    unsigned short key_state = (unsigned short) GetAsyncKeyState(INPUT_PAD[key_number]);
+    return (uint8_t) (key_state > 0);
 }
 
-uint8_t Inp_blocking_next_key()
+uint8_t Inp_blocking_next(void)
 {
     for (;;) {
         int c = getch();
@@ -37,29 +36,19 @@ uint8_t Inp_blocking_next_key()
             return (uint8_t) (c - '0');
         }
         if (c >= 'a' && c <= 'f') {
-            return (uint8_t) (c - 'a');
+            return (uint8_t) (9 + c - 'a');
         }
-    }
-}
-
-void Inp_cycle(void)
-{
-    unsigned int i;
-
-    for (i = 0; i < KEY_COUNT; i++) {
-        /* Using windows API for keyboard state. */
-        unsigned short key_state = (unsigned short) GetAsyncKeyState(INPUT_PAD[i]);
-        key[i] = (uint8_t) (key_state > 0);
     }
 }
 
 void Inp_print(void)
 {
-    unsigned int i;
+    uint8_t i;
 
     printf("%s", "Key: ");
     for (i = 0; i < KEY_COUNT; i++) {
-        printf("%d ", key[i]);
+        printf("%d ", Inp_is_pressed(i));
     }
+
     printf("\n");
 }

@@ -1,5 +1,5 @@
-chip8.exe: chip8.o cpu.o input.o screen.o
-	gcc chip8.o cpu.o input.o screen.o -o chip8.exe
+chip8.exe: chip8.o cpu.o input.o screen.o constant.o
+	gcc chip8.o cpu.o input.o screen.o constant.o -o chip8.exe
 
 chip8.o: chip8.c cpu.h input.h screen.h constant.h
 	gcc -c chip8.c -o chip8.o
@@ -12,4 +12,7 @@ input.o: input.c input.h constant.h
 
 screen.o: screen.c screen.h constant.h
 	gcc -c screen.c -o screen.o
+
+constant.o: constant.c constant.h
+	gcc -c constant.c -o constant.o
 
