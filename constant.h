@@ -18,7 +18,4 @@ extern const uint16_t DIGIT_SPRITE_LOCATION[];
 /* Number of pixels on the system's screen. */
 extern const uint16_t PIXEL_COUNT;
 
-/* Indicator of success or failure of hardware component to initialize. */
-enum INIT_STATUS {INIT_STATUS_SUCCESS, INIT_STATUS_FAILURE};
-
 #endif /* CHIP8_CONSTANT_H */

@@ -14,9 +14,9 @@ static const int INPUT_PAD[] = {'0','1','2','3','4','5','6','7','8','9','A','B',
 /* The number of input keys to the system. */
 static const int KEY_COUNT = 16;
 
-enum INIT_STATUS Inp_init(void)
+bool Inp_init(void)
 {
-    return INIT_STATUS_SUCCESS;
+    return true;
 }
 
 uint8_t Inp_is_pressed(uint8_t key_number)
@@ -51,4 +51,9 @@ void Inp_print(void)
     }
 
     printf("\n");
+}
+
+void Inp_uninit(void)
+{
+    return;
 }

@@ -11,13 +11,13 @@
 /* A bit vector representing the system's monochrome screen. Each bit represents the on/off state of a single pixel. */
 static uint8_t *display;
 
-enum INIT_STATUS Scr_init(void)
+bool Scr_init(void)
 {
     /* The screen size should always be a whole number of bytes. */
     assert(PIXEL_COUNT % CHAR_BIT == 0);
 
     display = calloc(PIXEL_COUNT / CHAR_BIT, sizeof *display);
-    return display ? INIT_STATUS_SUCCESS : INIT_STATUS_FAILURE;
+    return (bool) display;
 }
 
 uint8_t Scr_paint(uint8_t x, uint8_t y, uint8_t value)
@@ -61,4 +61,9 @@ void Scr_print(void)
     }
 
     printf("\n");
+}
+
+void Scr_uninit(void)
+{
+    free(display);
 }

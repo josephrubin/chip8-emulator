@@ -20,14 +20,14 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    if (Ch8_init(argv[1]) == INIT_STATUS_FAILURE) {
+    if (!Ch8_turn_on(argv[1])) {
         return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;
 }
 
-enum INIT_STATUS Ch8_init(char *rom_file_name)
+bool Ch8_turn_on(char *rom_file_name)
 {
     FILE *interpreter_data, *rom;
     unsigned int i;
@@ -37,7 +37,7 @@ enum INIT_STATUS Ch8_init(char *rom_file_name)
     if (!interpreter_data) {
         fprintf(stderr, "The interpreter data could not be loaded. "
                         "Ensure that the '%s' file is present in the working directory.", INTERPRETER_DATA_FILE_NAME);
-        return INIT_STATUS_FAILURE;
+        return false;
     }
 
     rom = fopen(rom_file_name, "rb");
@@ -45,7 +45,7 @@ enum INIT_STATUS Ch8_init(char *rom_file_name)
         fclose(interpreter_data);
         fprintf(stderr, "The ROM file could not be loaded. "
                         "Ensure that the '%s' file is present in the working directory.", rom_file_name);
-        return INIT_STATUS_FAILURE;
+        return false;
     }
 
     /* Allocate main memory for the system. */
@@ -53,7 +53,7 @@ enum INIT_STATUS Ch8_init(char *rom_file_name)
     if (!memory) {
         fclose(interpreter_data);
         fclose(rom);
-        return INIT_STATUS_FAILURE;
+        return false;
     }
 
     /* Load in the interpreter data which is constant regardless of the ROM. */
@@ -64,10 +64,19 @@ enum INIT_STATUS Ch8_init(char *rom_file_name)
     fread(memory + APPLICATION_START, sizeof *memory, MEMORY_SIZE - APPLICATION_START, rom);
     fclose(rom);
 
-    /* Initialize all hardware modules and enable the cpu last. */
-    Scr_init();
-    Inp_init();
-    Cpu_init(memory);
+    /* Initialize all hardware modules. */
+    if (!Scr_init()) {
+        free(memory);
+    }
+    if (!Inp_init()) {
+        Scr_uninit();
+        free(memory);
+    }
+    if (!Cpu_init(memory)) {
+        Inp_uninit();
+        Scr_uninit();
+        free(memory);
+    }
 
     /* Driving the system consists of continuously cycling the cpu and updating the screen. */
     for (;;) {
@@ -80,5 +89,11 @@ enum INIT_STATUS Ch8_init(char *rom_file_name)
         //sleep(1);
     }
 
-    return INIT_STATUS_SUCCESS;
+    Cpu_uninit();
+    Inp_uninit();
+    Scr_uninit();
+    free(memory);
+
+    return true;
 }
+

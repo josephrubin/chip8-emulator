@@ -43,7 +43,7 @@ static const int F = 15;
 /* An additional register I is often used by the application to hold a memory address. */
 static uint16_t I;
 
-enum INIT_STATUS Cpu_init(uint8_t *allocated_memory) {
+bool Cpu_init(uint8_t *allocated_memory) {
     memory = allocated_memory;
 
     delay_timer = 0;
@@ -56,7 +56,7 @@ enum INIT_STATUS Cpu_init(uint8_t *allocated_memory) {
     I = 0;
     register_v = calloc(16, sizeof *register_v);
     if (!register_v) {
-        return INIT_STATUS_FAILURE;
+        return false;
     }
 
     /* Allocate the stack and point to the top of it. */
@@ -64,16 +64,16 @@ enum INIT_STATUS Cpu_init(uint8_t *allocated_memory) {
     stack = malloc(8 * sizeof *stack);
     if (!stack) {
         free(register_v);
-        return INIT_STATUS_FAILURE;
+        return false;
     }
 
     /* Seed the RNG. */
     srand((unsigned int) time(NULL));
 
-    return INIT_STATUS_SUCCESS;
+    return true;
 }
 
-void Cpu_cycle(void) {
+bool Cpu_cycle(void) {
     /* Set when an opcode cannot be successfully decoded. */
     uint8_t unknown_opcode;
 
@@ -382,20 +382,28 @@ void Cpu_cycle(void) {
             unknown_opcode = 1;
     }
 
-    if (unknown_opcode) {
-        /* If there was an issue decoding the opcode, there was no execution. */
-        fprintf(stderr, "Unknown opcode: %04x\n", opcode);
-        // todo: free all memory, exit gracefully.
-        exit(EXIT_FAILURE);
-    }
-
+    // todo: timer depletion should be done at 60hz somewhere else, independent of the cpu cycle.
     if (sound_timer > 0) {
         sound_timer--;
-        // TODO: make sound..
+        // todo: make sound.
     }
     if (delay_timer > 0) {
         delay_timer--;
     }
+
+    if (unknown_opcode) {
+        /* If there was an issue decoding the opcode, there was no execution. */
+
+        /* Output to stderr allows the user to know that the program is not operating perfectly on the given ROM. */
+        fprintf(stderr, "Unknown opcode: %04x\n", opcode);
+
+        /* Increment the program counter so we can continue execution if the system decides to ignore this error. */
+        program_counter += 2;
+
+        return false;
+    }
+
+    return true;
 }
 
 void Cpu_print_memory(void)
@@ -407,4 +415,10 @@ void Cpu_print_memory(void)
     }
 
     printf("I=%04x \n", I);
+}
+
+void Cpu_uninit(void)
+{
+    free(stack);
+    free(register_v);
 }
