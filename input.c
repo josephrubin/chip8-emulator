@@ -2,9 +2,6 @@
 #include <malloc.h>
 #include <assert.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <afxres.h>
-#include <conio.h>
 
 #include "input.h"
 
@@ -14,30 +11,30 @@ static const int INPUT_PAD[] = {'0','1','2','3','4','5','6','7','8','9','A','B',
 /* The number of input keys to the system. */
 static const int KEY_COUNT = 16;
 
-bool Inp_init(void)
+enum bool Inp_init(void)
 {
-    return true;
+    return TRUE;
 }
 
 uint8_t Inp_is_pressed(uint8_t key_number)
 {
     assert(key_number < KEY_COUNT);
 
-    /* Using windows API for keyboard state. */
-    unsigned short key_state = (unsigned short) GetAsyncKeyState(INPUT_PAD[key_number]);
-    return (uint8_t) (key_state > 0);
+    //unsigned short key_state = (unsigned short) GetAsyncKeyState(INPUT_PAD[key_number]);
+    //return (uint8_t) (key_state > 0);
+    return 0;
 }
 
 uint8_t Inp_blocking_next(void)
 {
-    for (;;) {
+    for (;;) {/*
         int c = getch();
         if (c >= '0' && c <= '9') {
             return (uint8_t) (c - '0');
         }
         if (c >= 'a' && c <= 'f') {
             return (uint8_t) (9 + c - 'a');
-        }
+        }*/
     }
 }
 

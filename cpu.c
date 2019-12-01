@@ -1,8 +1,9 @@
 #include <stdint.h>
 #include <malloc.h>
 #include <assert.h>
-#include <mem.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "cpu.h"
@@ -43,7 +44,7 @@ static const int F = 15;
 /* An additional register I is often used by the application to hold a memory address. */
 static uint16_t I;
 
-bool Cpu_init(uint8_t *allocated_memory) {
+enum bool Cpu_init(uint8_t *allocated_memory) {
     memory = allocated_memory;
 
     delay_timer = 0;
@@ -56,7 +57,7 @@ bool Cpu_init(uint8_t *allocated_memory) {
     I = 0;
     register_v = calloc(16, sizeof *register_v);
     if (!register_v) {
-        return false;
+        return FALSE;
     }
 
     /* Allocate the stack and point to the top of it. */
@@ -64,18 +65,18 @@ bool Cpu_init(uint8_t *allocated_memory) {
     stack = malloc(8 * sizeof *stack);
     if (!stack) {
         free(register_v);
-        return false;
+        return FALSE;
     }
 
     /* Seed the RNG. */
     srand((unsigned int) time(NULL));
 
-    return true;
+    return TRUE;
 }
 
-bool Cpu_cycle(void) {
+enum bool Cpu_cycle(void) {
     /* Set when an opcode cannot be successfully decoded. */
-    uint8_t unknown_opcode;
+    enum bool unknown_opcode;
 
     /* Fetch current two byte instruction. */
     uint16_t opcode = memory[program_counter] << 8U | memory[program_counter + 1];
@@ -87,12 +88,12 @@ bool Cpu_cycle(void) {
     uint8_t fourth_nibble = (opcode >> 0) & 0x0F;
 
     /* Decode and execute instruction. */
-    unknown_opcode = 0;
+    unknown_opcode = FALSE;
     switch (first_nibble) {
         case 0x0:
             if ((opcode & 0xFFFu) == 0x0E0) {
                 /* 00E0: Clear the screen. */
-                Scr_clear();
+                Screen_clear();
                 program_counter += 2;
             }
             else if ((opcode & 0xFFFu) == 0x0EE) {
@@ -102,7 +103,7 @@ bool Cpu_cycle(void) {
                 program_counter += 2;
             }
             else {
-                unknown_opcode = 1;
+                unknown_opcode = TRUE;
             }
             break;
 
@@ -143,7 +144,7 @@ bool Cpu_cycle(void) {
                 program_counter += 2;
             }
             else {
-                unknown_opcode = 1;
+                unknown_opcode = TRUE;
             }
             break;
 
@@ -229,7 +230,7 @@ bool Cpu_cycle(void) {
                     break;
 
                 default:
-                    unknown_opcode = 1;
+                    unknown_opcode = TRUE;
                     break;
             }
             break;
@@ -244,7 +245,7 @@ bool Cpu_cycle(void) {
                 program_counter += 2;
             }
             else {
-                unknown_opcode = 1;
+                unknown_opcode = TRUE;
             }
             break;
 
@@ -277,7 +278,7 @@ bool Cpu_cycle(void) {
             for (i = 0; i < fourth_nibble; i++) {
                 sprite_row = memory[bitstring_location];
                 for (j = 0; j < 8; j++) {
-                    if(Scr_paint(register_v[second_nibble] + j, register_v[third_nibble] + i, (sprite_row >> 7) & 1)) {
+                    if(Screen_paint(register_v[second_nibble] + j, register_v[third_nibble] + i, (sprite_row >> 7) & 1)) {
                         register_v[F] = 1;
                     }
                     sprite_row <<= 1;
@@ -304,7 +305,7 @@ bool Cpu_cycle(void) {
                 program_counter += 2;
             }
             else {
-                unknown_opcode = 1;
+                unknown_opcode = TRUE;
             }
             break;
 
@@ -374,12 +375,12 @@ bool Cpu_cycle(void) {
                     break;
 
                 default:
-                    unknown_opcode = 1;
+                    unknown_opcode = TRUE;
             }
             break;
 
         default:
-            unknown_opcode = 1;
+            unknown_opcode = TRUE;
     }
 
     // todo: timer depletion should be done at 60hz somewhere else, independent of the cpu cycle.
@@ -400,10 +401,10 @@ bool Cpu_cycle(void) {
         /* Increment the program counter so we can continue execution if the system decides to ignore this error. */
         program_counter += 2;
 
-        return false;
+        return FALSE;
     }
 
-    return true;
+    return TRUE;
 }
 
 void Cpu_print_memory(void)
