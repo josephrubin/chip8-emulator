@@ -19,5 +19,9 @@ chip8: .chip8.o .cpu.o .input.o .screen.o .constant.o .port.o
 .port.o: port.c port.h
 	gcc -c port.c -o .port.o
 
+test: clean chip8
+	make clean
+
+.PHONY: clean
 clean:
-	rm -f *.o chip8
+	$(RM) .*.o chip8

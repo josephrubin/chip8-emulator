@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+/* Boolean data type. */
 enum bool {FALSE, TRUE};
 
 /* The number of bytes in the system RAM. */

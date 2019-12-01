@@ -8,7 +8,7 @@ const uint16_t MEMORY_SIZE = 4 * 1024;
 
 const uint16_t APPLICATION_START = 0x200;
 
-const char *INTERPRETER_DATA_FILE_NAME = "interpreter_data";
+const char *INTERPRETER_DATA_FILE_NAME = "interpreter";
 
 const uint16_t DIGIT_SPRITE_LOCATION[] = {0x00, 0x05, 0x0A, 0x0F,
                                           0x14, 0x19, 0x1E, 0x23,
