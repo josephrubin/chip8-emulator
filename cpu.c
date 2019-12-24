@@ -29,7 +29,8 @@ static uint16_t program_counter;
 /* Stores return addresses for subroutine calls. */
 static uint16_t *stack;
 
-/* Points to the top of the stack, the next place that a return address will be placed. */
+/* Points to the top of the stack, the next place that a return address will
+ * be placed. */
 static uint16_t stack_pointer;
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -44,13 +45,30 @@ static const int F = 15;
 /* An additional register I is often used by the application to hold a memory address. */
 static uint16_t I;
 
+static void check_invariants(void) {
+    /* Program counter points to two bytes at once, aligned at an even
+     * address. We may not execute in the interpreter data. */
+    assert(program_counter % 2 == 0);
+    assert(program_counter >= APPLICATION_START);
+    assert(program_counter < MEMORY_SIZE);
+
+    /* Stack pointer increments after a push, so it may point to one past
+     * the end of the stack if the stack is full. */
+    assert(stack_pointer >= 0);
+    assert(stack_pointer <= STACK_SIZE);
+
+    assert(delay_timer >= 0);
+    assert(sound_timer >= 0);
+}
+
 enum bool Cpu_init(uint8_t *allocated_memory) {
     memory = allocated_memory;
 
     delay_timer = 0;
     sound_timer = 0;
 
-    /* Recall that the ROM is loaded in at APPLICATION_START, not at address 0 (which is used by the interpreter). */
+    /* Recall that the ROM is loaded in at APPLICATION_START,
+     * not at address 0 (which is used by the interpreter). */
     program_counter = APPLICATION_START;
 
     /* Allocate the registers clear them. */
@@ -62,7 +80,7 @@ enum bool Cpu_init(uint8_t *allocated_memory) {
 
     /* Allocate the stack and point to the top of it. */
     stack_pointer = 0;
-    stack = malloc(8 * sizeof *stack);
+    stack = malloc(STACK_SIZE * sizeof *stack);
     if (!stack) {
         free(register_v);
         return FALSE;
@@ -70,17 +88,22 @@ enum bool Cpu_init(uint8_t *allocated_memory) {
 
     /* Seed the RNG. */
     srand((unsigned int) time(NULL));
+    
+    check_invariants();
 
     return TRUE;
 }
 
 enum bool Cpu_cycle(void) {
+    check_invariants();
+
     /* Set when an opcode cannot be successfully decoded. */
-    enum bool unknown_opcode;
+    enum bool unknown_opcode = FALSE;
 
     /* Fetch current two byte instruction. */
-    uint16_t opcode = memory[program_counter] << 8U | memory[program_counter + 1];
+    uint8_t first_byte = memory[program_counter];
     uint8_t second_byte = memory[program_counter + 1];
+    uint16_t opcode = first_byte << 8u | second_byte;
 
     uint8_t first_nibble = (opcode >> 12) & 0x0F;
     uint8_t second_nibble = (opcode >> 8) & 0x0F;
@@ -88,7 +111,6 @@ enum bool Cpu_cycle(void) {
     uint8_t fourth_nibble = (opcode >> 0) & 0x0F;
 
     /* Decode and execute instruction. */
-    unknown_opcode = FALSE;
     switch (first_nibble) {
         case 0x0:
             if ((opcode & 0xFFFu) == 0x0E0) {
@@ -136,8 +158,8 @@ enum bool Cpu_cycle(void) {
             break;
 
         case 0x5:
-            /* 5XY0: Skip next instruction if VX != VY. */
             if (fourth_nibble == 0) {
+                /* 5XY0: Skip next instruction if VX != VY. */
                 if (register_v[second_nibble] != register_v[third_nibble]) {
                     program_counter += 2;
                 }
@@ -189,22 +211,26 @@ enum bool Cpu_cycle(void) {
                 case 0x4:
                     /* 8XY4: VX += VY. */
                     register_v[second_nibble] += register_v[third_nibble];
-                    register_v[F] = (register_v[second_nibble] < register_v[third_nibble]);
+                    register_v[F] =
+                        register_v[second_nibble] < register_v[third_nibble];
                     program_counter += 2;
                     break;
 
                 case 0x5:
                     /* 8XY5: VX -= VY. */
-                    register_v[F] = register_v[second_nibble] > register_v[third_nibble];
+                    register_v[F] =
+                        register_v[second_nibble] > register_v[third_nibble];
                     register_v[second_nibble] -= register_v[third_nibble];
                     program_counter += 2;
                     break;
 
                 case 0x6:
                     /* 8XY6: VX >>= 1. */
-                    /* Specs on this operation differ -- this assertion ensures that application writers do not assume
-                       functionality unsupported by this emulator. This assertion has never failed in my testing
-                       of CHIP-8 ROMS available online. */
+                    /* Specs on this operation differ; this assertion ensures
+                     * that application writers do not assume functionality
+                     * unsupported by this emulator.
+                     * This assertion has never failed in my testing of CHIP-8
+                     * ROMS available online. */
                     assert(second_nibble == third_nibble);
                     register_v[F] = register_v[second_nibble] & 1;
                     register_v[second_nibble] >>= 1;
@@ -213,16 +239,20 @@ enum bool Cpu_cycle(void) {
 
                 case 0x7:
                     /* 8XY7: VX = VY - VX. */
-                    register_v[F] = register_v[third_nibble] > register_v[second_nibble];
-                    register_v[second_nibble] = register_v[third_nibble] - register_v[second_nibble];
+                    register_v[F] =
+                        register_v[third_nibble] > register_v[second_nibble];
+                    register_v[second_nibble] =
+                        register_v[third_nibble] - register_v[second_nibble];
                     program_counter += 2;
                     break;
 
                 case 0xE:
                     /* 8XYE: VX <<= 1. */
-                    /* Specs on this operation differ -- this assertion ensures that application writers do not assume
-                       functionality unsupported by this emulator. This assertion has never failed in my testing
-                       of CHIP-8 ROMS available online. */
+                    /* Specs on this operation differ; this assertion ensures
+                     * that application writers do not assume
+                     * functionality unsupported by this emulator.
+                     * This assertion has never failed in my testing of CHIP-8
+                     * ROMS available online. */
                     assert(second_nibble == third_nibble);
                     register_v[F] = register_v[second_nibble] & ~(~0 >> 1);
                     register_v[second_nibble] <<= 1;
@@ -268,7 +298,8 @@ enum bool Cpu_cycle(void) {
             break;
 
         case 0xD: {
-            /* DXYN: Draw sprite at (x,y)=(VX,VY), (width,height)=(8,N). V[F] is set if collision, otherwise cleared. */
+            /* DXYN: Draw sprite at (x,y)=(VX,VY), (width,height)=(8,N).
+             * V[F] is set if collision, otherwise cleared. */
             unsigned int i, j;
             uint16_t bitstring_location;
             uint8_t sprite_row;
@@ -278,7 +309,9 @@ enum bool Cpu_cycle(void) {
             for (i = 0; i < fourth_nibble; i++) {
                 sprite_row = memory[bitstring_location];
                 for (j = 0; j < 8; j++) {
-                    if(Screen_paint(register_v[second_nibble] + j, register_v[third_nibble] + i, (sprite_row >> 7) & 1)) {
+                    if (Screen_paint(register_v[second_nibble] + j,
+                                register_v[third_nibble] + i,
+                                (sprite_row >> 7) & 1)) {
                         register_v[F] = 1;
                     }
                     sprite_row <<= 1;
@@ -318,7 +351,7 @@ enum bool Cpu_cycle(void) {
                     break;
 
                 case 0x0A:
-                    /* FX0A: VX = next key pressed (block until next input). */
+                    /* FX0A: VX = next key pressed (block until input). */
                     register_v[second_nibble] = Inp_blocking_next();
                     program_counter += 2;
                     break;
@@ -349,7 +382,8 @@ enum bool Cpu_cycle(void) {
                     break;
 
                 case 0x33: {
-                    /* FX33: store the decimal representation of value at VX (hundreds, tens, units) in I, I+1, I+2. */
+                    /* FX33: store the decimal representation of value at
+                     * VX (hundreds, tens, units) in I, I+1, I+2. */
                     uint8_t decimal_value = register_v[second_nibble];
                     memory[I] = decimal_value / 100;
                     decimal_value %= 100;
@@ -393,22 +427,30 @@ enum bool Cpu_cycle(void) {
     }
 
     if (unknown_opcode) {
-        /* If there was an issue decoding the opcode, there was no execution. */
+        /* If there was an issue decoding the opcode,
+         * there was no execution. */
 
-        /* Output to stderr allows the user to know that the program is not operating perfectly on the given ROM. */
+        /* Output to stderr allows the user to know that the program is not
+         * operating perfectly on the given ROM. */
         fprintf(stderr, "Unknown opcode: %04x\n", opcode);
 
-        /* Increment the program counter so we can continue execution if the system decides to ignore this error. */
+        /* Increment the program counter so we can continue execution if the
+         * system decides to ignore this error. */
         program_counter += 2;
+
+        check_invariants();
 
         return FALSE;
     }
 
+    check_invariants();
     return TRUE;
 }
 
 void Cpu_print_memory(void)
 {
+    check_invariants();
+
     uint8_t i;
 
     for (i = 0; i < 16; i++) {
@@ -416,10 +458,14 @@ void Cpu_print_memory(void)
     }
 
     printf("I=%04x \n", I);
+
+    check_invariants();
 }
 
 void Cpu_uninit(void)
 {
+    check_invariants();
+
     free(stack);
     free(register_v);
 }

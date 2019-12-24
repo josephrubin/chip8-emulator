@@ -6,6 +6,8 @@
 
 const uint16_t MEMORY_SIZE = 4 * 1024;
 
+const uint8_t STACK_SIZE = 8;
+
 const uint16_t APPLICATION_START = 0x200;
 
 const char *INTERPRETER_DATA_FILE_NAME = "interpreter";

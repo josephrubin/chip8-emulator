@@ -9,6 +9,9 @@ enum bool {FALSE, TRUE};
 /* The number of bytes in the system RAM. */
 extern const uint16_t MEMORY_SIZE;
 
+/* The number of entries (each capable of holding an address) in the stack. */
+extern const uint8_t STACK_SIZE;
+
 /* The memory offset that a ROM is loaded into in memory. */
 extern const uint16_t APPLICATION_START;
 

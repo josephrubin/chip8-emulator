@@ -53,6 +53,7 @@ void Screen_clear(void)
 
 void Screen_print(void)
 {
+    //todo: move this to port.c
     unsigned int i, j;
 
     for (i = 0; i < PIXEL_COUNT / CHAR_BIT; i++) {

@@ -18,7 +18,7 @@ static uint8_t *memory;
 int main(int argc, char *argv[])
 {
     if (argc != 2) {
-        fprintf(stderr, "Usage: %s <rom_file>", argv[0]);
+        fprintf(stderr, "Usage: %s <rom_file>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -40,7 +40,7 @@ enum bool Ch8_turn_on(char *rom_file_name)
     if (!interpreter_data) {
         fprintf(stderr, "The interpreter data could not be loaded. "
                         "Ensure that the '%s' file is present in the "
-                        "working directory.", INTERPRETER_DATA_FILE_NAME);
+                        "working directory.\n", INTERPRETER_DATA_FILE_NAME);
         return FALSE;
     }
 
@@ -49,7 +49,7 @@ enum bool Ch8_turn_on(char *rom_file_name)
         fclose(interpreter_data);
         fprintf(stderr, "The ROM file could not be loaded. "
                         "Ensure that the '%s' file is present in the "
-                        "working directory.", rom_file_name);
+                        "working directory.\n", rom_file_name);
         return FALSE;
     }
 
@@ -68,7 +68,7 @@ enum bool Ch8_turn_on(char *rom_file_name)
 
     /* Load in the ROM. */
     fread(memory + APPLICATION_START, sizeof *memory,
-            MEMORY_SIZE - APPLICATION_START, rom);
+          MEMORY_SIZE - APPLICATION_START, rom);
     fclose(rom);
 
     /* Initialize all hardware modules. */
