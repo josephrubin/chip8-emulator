@@ -23,7 +23,13 @@ extern const char *INTERPRETER_DATA_FILE_NAME;
  * sprites are located at in the interpreter data. */
 extern const uint16_t DIGIT_SPRITE_LOCATION[];
 
-/* Number of pixels on the system's screen. */
-extern const uint16_t PIXEL_COUNT;
+/* Number of pixels in the system's screen's width. */
+extern const uint16_t WIDTH_PIXEL_COUNT;
+
+/* Number of pixels in the system's screen's height. */
+extern const uint16_t HEIGHT_PIXEL_COUNT;
+
+/* Total number of pixels on the system's screen. */
+#define PIXEL_COUNT ((uint16_t) ((WIDTH_PIXEL_COUNT) * (HEIGHT_PIXEL_COUNT)))
 
 #endif /* CHIP8_CONSTANT_H */

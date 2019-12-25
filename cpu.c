@@ -20,8 +20,8 @@ static uint8_t delay_timer;
 /* Counts down at 60hz and emits a tone if above 0. */
 static uint8_t sound_timer;
 
-/* ------------------------------------------------------------------------------------------------------------------ */
-/* CPU Managed Registers -------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+/* CPU Managed Registers ---------------------------------------------------- */
 
 /* Points to the memory address currently being executed. */
 static uint16_t program_counter;
@@ -33,18 +33,22 @@ static uint16_t *stack;
  * be placed. */
 static uint16_t stack_pointer;
 
-/* ------------------------------------------------------------------------------------------------------------------ */
-/* Application Managed Registers ------------------------------------------------------------------------------------ */
+/* -------------------------------------------------------------------------- */
+/* Application Managed Registers -------------------------------------------- */
 
 /* The CPU's 16 main registers, V0-VF. */
 static uint8_t *register_v;
 
 /* The last register, VF, is used as a carry/overflow indicator. */
-static const int F = 15;
+static const int F = 0xF;
 
 /* An additional register I is often used by the application to hold a memory address. */
 static uint16_t I;
 
+/* -------------------------------------------------------------------------- */
+/* Private Interface -------------------------------------------------------- */
+
+/* Abort the program if the CPU is in an invalid state. */
 static void check_invariants(void) {
     /* Program counter points to two bytes at once, aligned at an even
      * address. We may not execute in the interpreter data. */
@@ -57,6 +61,7 @@ static void check_invariants(void) {
     assert(stack_pointer >= 0);
     assert(stack_pointer <= STACK_SIZE);
 
+    /* Timers count down until zero, then deactivate. */
     assert(delay_timer >= 0);
     assert(sound_timer >= 0);
 }
@@ -71,7 +76,7 @@ enum bool Cpu_init(uint8_t *allocated_memory) {
      * not at address 0 (which is used by the interpreter). */
     program_counter = APPLICATION_START;
 
-    /* Allocate the registers clear them. */
+    /* Allocate the registers and clear them. */
     I = 0;
     register_v = calloc(16, sizeof *register_v);
     if (!register_v) {
@@ -90,7 +95,6 @@ enum bool Cpu_init(uint8_t *allocated_memory) {
     srand((unsigned int) time(NULL));
     
     check_invariants();
-
     return TRUE;
 }
 
@@ -113,12 +117,12 @@ enum bool Cpu_cycle(void) {
     /* Decode and execute instruction. */
     switch (first_nibble) {
         case 0x0:
-            if ((opcode & 0xFFFu) == 0x0E0) {
+            if ((opcode & 0x0FFFu) == 0x0E0) {
                 /* 00E0: Clear the screen. */
                 Screen_clear();
                 program_counter += 2;
             }
-            else if ((opcode & 0xFFFu) == 0x0EE) {
+            else if ((opcode & 0x0FFFu) == 0x0EE) {
                 /* 00EE: Return from subroutine. */
                 stack_pointer--;
                 program_counter = stack[stack_pointer];
@@ -439,7 +443,6 @@ enum bool Cpu_cycle(void) {
         program_counter += 2;
 
         check_invariants();
-
         return FALSE;
     }
 

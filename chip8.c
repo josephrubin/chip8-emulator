@@ -102,7 +102,7 @@ enum bool Ch8_turn_on(char *rom_file_name)
         }
         //Cpu_print_memory();
         Port_clear_screen();
-        Screen_print();
+        Screen_display();
         Port_delay(20);
     }
 

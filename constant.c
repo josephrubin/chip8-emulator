@@ -17,4 +17,6 @@ const uint16_t DIGIT_SPRITE_LOCATION[] = {0x00, 0x05, 0x0A, 0x0F,
                                           0x28, 0x2D, 0x32, 0x37,
                                           0x3C, 0x41, 0x46, 0x4B};
 
-const uint16_t PIXEL_COUNT = 64 * 32;
+const uint16_t WIDTH_PIXEL_COUNT = 64;
+
+const uint16_t HEIGHT_PIXEL_COUNT = 32;
