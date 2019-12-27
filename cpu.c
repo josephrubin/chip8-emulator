@@ -15,10 +15,10 @@
 static uint8_t *memory;
 
 /* Counts down at 60hz if above 0. */
-static uint8_t delay_timer;
+static int16_t delay_timer;
 
 /* Counts down at 60hz and emits a tone if above 0. */
-static uint8_t sound_timer;
+static int16_t sound_timer;
 
 /* -------------------------------------------------------------------------- */
 /* CPU Managed Registers ---------------------------------------------------- */
@@ -31,7 +31,7 @@ static uint16_t *stack;
 
 /* Points to the top of the stack, the next place that a return address will
  * be placed. */
-static uint16_t stack_pointer;
+static int16_t stack_pointer;
 
 /* -------------------------------------------------------------------------- */
 /* Application Managed Registers -------------------------------------------- */
@@ -78,7 +78,7 @@ enum bool Cpu_init(uint8_t *allocated_memory) {
 
     /* Allocate the registers and clear them. */
     I = 0;
-    register_v = calloc(16, sizeof *register_v);
+    register_v = calloc(0xF, sizeof *register_v);
     if (!register_v) {
         return FALSE;
     }
@@ -98,7 +98,7 @@ enum bool Cpu_init(uint8_t *allocated_memory) {
     return TRUE;
 }
 
-enum bool Cpu_cycle(void) {
+enum bool Cpu_cycle(enum bool *invalidate_display) {
     check_invariants();
 
     /* Set when an opcode cannot be successfully decoded. */
@@ -114,12 +114,16 @@ enum bool Cpu_cycle(void) {
     uint8_t third_nibble = (opcode >> 4) & 0x0F;
     uint8_t fourth_nibble = (opcode >> 0) & 0x0F;
 
+    /* Set when an opode that draws to the screen is executed. */
+    *invalidate_display = FALSE;
+
     /* Decode and execute instruction. */
     switch (first_nibble) {
         case 0x0:
             if ((opcode & 0x0FFFu) == 0x0E0) {
                 /* 00E0: Clear the screen. */
                 Screen_clear();
+                *invalidate_display = TRUE;
                 program_counter += 2;
             }
             else if ((opcode & 0x0FFFu) == 0x0EE) {
@@ -163,8 +167,8 @@ enum bool Cpu_cycle(void) {
 
         case 0x5:
             if (fourth_nibble == 0) {
-                /* 5XY0: Skip next instruction if VX != VY. */
-                if (register_v[second_nibble] != register_v[third_nibble]) {
+                /* 5XY0: Skip next instruction if VX == VY. */
+                if (register_v[second_nibble] == register_v[third_nibble]) {
                     program_counter += 2;
                 }
                 program_counter += 2;
@@ -258,7 +262,8 @@ enum bool Cpu_cycle(void) {
                      * This assertion has never failed in my testing of CHIP-8
                      * ROMS available online. */
                     assert(second_nibble == third_nibble);
-                    register_v[F] = register_v[second_nibble] & ~(~0 >> 1);
+                    register_v[F] = (register_v[second_nibble]
+                                     & (1u << (CHAR_BIT_COUNT - 1))) != 0;
                     register_v[second_nibble] <<= 1;
                     program_counter += 2;
                     break;
@@ -314,14 +319,15 @@ enum bool Cpu_cycle(void) {
                 sprite_row = memory[bitstring_location];
                 for (j = 0; j < 8; j++) {
                     if (Screen_paint(register_v[second_nibble] + j,
-                                register_v[third_nibble] + i,
-                                (sprite_row >> 7) & 1)) {
+                                     register_v[third_nibble] + i,
+                                     (sprite_row >> 7) & 1)) {
                         register_v[F] = 1;
                     }
                     sprite_row <<= 1;
                 }
                 bitstring_location++;
             }
+            *invalidate_display = TRUE;
             program_counter += 2;
             break;
         }
@@ -421,10 +427,10 @@ enum bool Cpu_cycle(void) {
             unknown_opcode = TRUE;
     }
 
-    // todo: timer depletion should be done at 60hz somewhere else, independent of the cpu cycle.
+    /* todo: timer depletion should be done at 60hz somewhere else, independent of the cpu cycle. */
     if (sound_timer > 0) {
         sound_timer--;
-        // todo: make sound.
+        /* todo: make sound. */
     }
     if (delay_timer > 0) {
         delay_timer--;

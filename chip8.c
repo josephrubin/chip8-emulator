@@ -15,24 +15,17 @@ static uint8_t *memory;
 
 /* Emulate the CHIP-8 system, loading in a ROM from the file specified by the
  * first command line argument. */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <rom_file>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
-    if (!Ch8_turn_on(argv[1])) {
-        return EXIT_FAILURE;
-    }
-
-    return EXIT_SUCCESS;
+    return Chip8_turn_on(argv[1]) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-enum bool Ch8_turn_on(char *rom_file_name)
-{
+enum bool Chip8_turn_on(char *rom_file_name) {
     FILE *interpreter_data, *rom;
-    unsigned int i;
 
     /* The chip-8 requires some data intrinsic to the interpreter in memory
      * before the ROM. */
@@ -91,26 +84,32 @@ enum bool Ch8_turn_on(char *rom_file_name)
     /* Driving the system consists of continuously cycling the cpu and
      * updating the screen. */
     for (;;) {
+        enum bool draw = FALSE;
+        unsigned int i;
+
+        /* Run a number of CPU cycles at once. */
         for (i = 0; i < 10; i++) {
-            if (Cpu_cycle() == FALSE) {
+            enum bool invalidate_display;
+            if (!Cpu_cycle(&invalidate_display)) {
+                /* Invalid execution or bad CPU state, kill the emulator. */
                 Cpu_uninit();
                 Inp_uninit();
                 Screen_uninit();
                 free(memory);
                 return FALSE;
             }
-        }
-        //Cpu_print_memory();
-        Port_clear_screen();
-        Screen_display();
-        Port_delay(20);
-    }
 
-    Cpu_uninit();
-    Inp_uninit();
-    Screen_uninit();
-    free(memory);
+            draw = draw || invalidate_display;
+        }
+
+        if (draw) {
+            Port_clear_screen();
+            Screen_display();
+        }
+
+        Port_delay(DELAY_MS);
+    }
     
+    /* We should never reach this because the chip8 can't be shut off. */
     assert(0);
-    return TRUE;
 }

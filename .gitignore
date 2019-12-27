@@ -1,4 +1,6 @@
 rom/
 *.o
 .*.o
-chip8
+
+# Binaries.
+*_chip8

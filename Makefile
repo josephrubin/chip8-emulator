@@ -1,5 +1,5 @@
 VPATH=include
-CC_FLAGS=-Iinclude
+CC_FLAGS=-Iinclude -pedantic -Wall -Wextra -Wpedantic
 GCC=$(CC) $(CC_FLAGS)
 
 linux_chip8: .chip8.o .cpu.o .input.o .screen.o .constant.o .linux_port.o
